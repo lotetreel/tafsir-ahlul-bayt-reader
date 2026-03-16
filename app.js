@@ -12,6 +12,7 @@ const state = {
 const elements = {
   chapterList: document.getElementById("chapterList"),
   chapterSearch: document.getElementById("chapterSearch"),
+  reader: document.querySelector(".reader"),
   chapterTitle: document.getElementById("chapterTitle"),
   chapterMeta: document.getElementById("chapterMeta"),
   chapterStats: document.getElementById("chapterStats"),
@@ -56,7 +57,7 @@ async function boot() {
   }
 
   renderChapterList();
-  await loadSurah(state.currentSura);
+  await loadSurah(state.currentSura, { revealReader: false });
 }
 
 function bindEvents() {
@@ -67,13 +68,13 @@ function bindEvents() {
 
   elements.prevChapter.addEventListener("click", () => {
     if (state.currentSura > 1) {
-      loadSurah(state.currentSura - 1);
+      loadSurah(state.currentSura - 1, { revealReader: false });
     }
   });
 
   elements.nextChapter.addEventListener("click", () => {
     if (state.currentSura < 114) {
-      loadSurah(state.currentSura + 1);
+      loadSurah(state.currentSura + 1, { revealReader: false });
     }
   });
 
@@ -116,12 +117,12 @@ function bindEvents() {
   window.addEventListener("hashchange", () => {
     const hashSura = Number.parseInt(window.location.hash.replace("#", ""), 10);
     if (Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura) && hashSura !== state.currentSura) {
-      loadSurah(hashSura);
+      loadSurah(hashSura, { revealReader: true });
     }
   });
 }
 
-async function loadSurah(sura) {
+async function loadSurah(sura, options = {}) {
   const chapter = state.chaptersBySura.get(sura);
   if (!chapter) {
     return;
@@ -137,6 +138,10 @@ async function loadSurah(sura) {
   state.currentSurahData = await response.json();
   updateHeader(chapter, state.currentSurahData);
   renderVerses();
+
+  if (options.revealReader) {
+    revealReaderOnCompactLayout();
+  }
 }
 
 function updateHeader(chapter, surahData) {
@@ -162,7 +167,7 @@ function renderChapterList() {
     if (chapter.sura === state.currentSura) {
       button.classList.add("active");
     }
-    button.addEventListener("click", () => loadSurah(chapter.sura));
+    button.addEventListener("click", () => loadSurah(chapter.sura, { revealReader: true }));
     fragment.append(button);
   }
 
@@ -222,6 +227,23 @@ function renderVerses() {
   }
 
   elements.verseList.replaceChildren(fragment);
+}
+
+function revealReaderOnCompactLayout() {
+  if (!elements.reader || !window.matchMedia("(max-width: 1080px)").matches) {
+    return;
+  }
+
+  const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
+
+  window.requestAnimationFrame(() => {
+    elements.reader.scrollIntoView({
+      behavior,
+      block: "start",
+    });
+  });
 }
 
 function openCommentary(verse) {
