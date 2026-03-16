@@ -7,9 +7,11 @@ const state = {
   searchQuery: "",
   showTransliteration: readToggle("showTransliteration", true),
   showEnglish: readToggle("showEnglish", true),
+  compactView: "list",
 };
 
 const elements = {
+  sidebar: document.getElementById("sidebar"),
   chapterList: document.getElementById("chapterList"),
   chapterSearch: document.getElementById("chapterSearch"),
   reader: document.querySelector(".reader"),
@@ -18,6 +20,7 @@ const elements = {
   chapterStats: document.getElementById("chapterStats"),
   basmalahCard: document.getElementById("basmalahCard"),
   verseList: document.getElementById("verseList"),
+  showChapterList: document.getElementById("showChapterList"),
   prevChapter: document.getElementById("prevChapter"),
   nextChapter: document.getElementById("nextChapter"),
   showTransliteration: document.getElementById("showTransliteration"),
@@ -52,15 +55,22 @@ async function boot() {
   });
 
   const hashSura = Number.parseInt(window.location.hash.replace("#", ""), 10);
+  const hasInitialHash = Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura);
   if (Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura)) {
     state.currentSura = hashSura;
   }
 
+  state.compactView = hasInitialHash ? "reader" : "list";
+  applyCompactViewState();
   renderChapterList();
-  await loadSurah(state.currentSura, { revealReader: false });
+  await loadSurah(state.currentSura, { revealReader: hasInitialHash });
 }
 
 function bindEvents() {
+  elements.showChapterList.addEventListener("click", () => {
+    showCompactListView();
+  });
+
   elements.chapterSearch.addEventListener("input", (event) => {
     state.searchQuery = event.target.value.trim().toLowerCase();
     renderChapterList();
@@ -68,13 +78,13 @@ function bindEvents() {
 
   elements.prevChapter.addEventListener("click", () => {
     if (state.currentSura > 1) {
-      loadSurah(state.currentSura - 1, { revealReader: false });
+      loadSurah(state.currentSura - 1, { revealReader: true });
     }
   });
 
   elements.nextChapter.addEventListener("click", () => {
     if (state.currentSura < 114) {
-      loadSurah(state.currentSura + 1, { revealReader: false });
+      loadSurah(state.currentSura + 1, { revealReader: true });
     }
   });
 
@@ -120,6 +130,8 @@ function bindEvents() {
       loadSurah(hashSura, { revealReader: true });
     }
   });
+
+  window.addEventListener("resize", applyCompactViewState);
 }
 
 async function loadSurah(sura, options = {}) {
@@ -140,7 +152,7 @@ async function loadSurah(sura, options = {}) {
   renderVerses();
 
   if (options.revealReader) {
-    revealReaderOnCompactLayout();
+    showCompactReaderView();
   }
 }
 
@@ -229,8 +241,39 @@ function renderVerses() {
   elements.verseList.replaceChildren(fragment);
 }
 
-function revealReaderOnCompactLayout() {
-  if (!elements.reader || !window.matchMedia("(max-width: 1080px)").matches) {
+function isCompactLayout() {
+  return window.matchMedia("(max-width: 1080px)").matches;
+}
+
+function applyCompactViewState() {
+  const compact = isCompactLayout();
+  document.body.classList.toggle("compact-layout", compact);
+  document.body.classList.toggle("compact-list-view", compact && state.compactView === "list");
+  document.body.classList.toggle("compact-reader-view", compact && state.compactView === "reader");
+}
+
+function showCompactReaderView() {
+  if (!elements.reader || !isCompactLayout()) {
+    return;
+  }
+
+  state.compactView = "reader";
+  applyCompactViewState();
+  scrollCompactViewportToTop();
+}
+
+function showCompactListView() {
+  if (!elements.sidebar || !isCompactLayout()) {
+    return;
+  }
+
+  state.compactView = "list";
+  applyCompactViewState();
+  scrollCompactViewportToTop();
+}
+
+function scrollCompactViewportToTop() {
+  if (!isCompactLayout()) {
     return;
   }
 
@@ -239,9 +282,9 @@ function revealReaderOnCompactLayout() {
     : "smooth";
 
   window.requestAnimationFrame(() => {
-    elements.reader.scrollIntoView({
+    window.scrollTo({
+      top: 0,
       behavior,
-      block: "start",
     });
   });
 }

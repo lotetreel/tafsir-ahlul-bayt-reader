@@ -186,6 +186,10 @@ body {
   gap: 10px;
 }
 
+.mobile-view-toggle {
+  display: none;
+}
+
 .nav-button,
 .commentary-trigger,
 .close-button,
@@ -730,6 +734,23 @@ body {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .mobile-view-toggle {
+    display: inline-flex;
+  }
+
+  body.compact-list-view .reader {
+    display: none;
+  }
+
+  body.compact-reader-view .sidebar {
+    display: none;
+  }
+
+  body.compact-reader-view .reader {
+    min-height: 100vh;
+    padding-top: 20px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -750,6 +771,7 @@ body {
 
   .hero-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .nav-button {
