@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "mizan-al-hikmah": {
+      "hosting": {
+        "reader": [
+          "tafsir-ahlul-bayt-reader"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

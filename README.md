@@ -16,9 +16,20 @@ py -m http.server 8000
 
 Then open [http://localhost:8000](http://localhost:8000).
 
-## Publish on GitHub Pages
+## Deploy to Firebase Hosting
 
-1. Create an empty GitHub repository.
-2. Add that repo as `origin`.
-3. Push the `main` branch.
-4. In the repository settings, enable GitHub Pages from the default branch root.
+This repo is configured for Firebase multi-site hosting in the `mizan-al-hikmah` project.
+
+```powershell
+firebase deploy --only hosting:reader --project mizan-al-hikmah
+```
+
+Current hosting URL:
+
+- [https://tafsir-ahlul-bayt-reader.web.app](https://tafsir-ahlul-bayt-reader.web.app)
+
+## Source control
+
+This static site is also tracked in GitHub:
+
+- [https://github.com/lotetreel/tafsir-ahlul-bayt-reader](https://github.com/lotetreel/tafsir-ahlul-bayt-reader)
