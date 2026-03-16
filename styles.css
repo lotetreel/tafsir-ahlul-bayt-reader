@@ -188,6 +188,8 @@ body {
 
 .mobile-view-toggle {
   display: none;
+  white-space: nowrap;
+  min-width: max-content;
 }
 
 .nav-button,
