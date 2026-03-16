@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260317-back-to-surahs">
+    <link rel="stylesheet" href="styles.css?v=20260317-surah-book-button">
   </head>
   <body>
     <div class="page-shell">
@@ -41,7 +41,30 @@
             </div>
 
             <div class="hero-actions">
-              <button id="showChapterList" class="nav-button mobile-view-toggle" type="button" aria-label="Back to surah list">&larr; Surah List</button>
+              <button id="showChapterList" class="btn-surah-list mobile-view-toggle" type="button" aria-label="Go back to Surah List">
+                <span class="icon-wrapper">
+                  <div class="book-3d" aria-hidden="true">
+                    <div class="b-part b-back"></div>
+                    <div class="b-part b-page-right">
+                      <div class="b-line"></div>
+                      <div class="b-line"></div>
+                      <div class="b-line short"></div>
+                    </div>
+                    <div class="b-flip">
+                      <div class="b-part b-cover">
+                        <div class="b-bookmark"></div>
+                        <div class="b-emblem"></div>
+                      </div>
+                      <div class="b-part b-page-left">
+                        <div class="b-line"></div>
+                        <div class="b-line"></div>
+                        <div class="b-line short"></div>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+                <span class="text-wrapper">Surah List</span>
+              </button>
               <button id="prevChapter" class="nav-button" type="button">Previous</button>
               <button id="nextChapter" class="nav-button" type="button">Next</button>
             </div>
@@ -138,6 +161,6 @@
       </article>
     </template>
 
-    <script src="app.js?v=20260317-back-to-surahs" type="module"></script>
+    <script src="app.js?v=20260317-surah-book-button" type="module"></script>
   </body>
 </html>
