@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tafsir Ahlul Bayt Reader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css?v=20260315-reader-only">
+  </head>
+  <body>
+    <div class="page-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <p class="eyebrow">Quran + Commentary</p>
+          <h1>Tafsir Ahlul Bayt</h1>
+          <p class="brand-copy">
+            Read the Quran with Arabic, Qarai English, transliteration, and per-verse riwayat commentary.
+          </p>
+        </div>
+
+        <label class="search-field" for="chapterSearch">
+          <span>Find a surah</span>
+          <input id="chapterSearch" type="search" placeholder="Search by number or name">
+        </label>
+
+        <div id="chapterList" class="chapter-list" aria-label="Quran chapters"></div>
+      </aside>
+
+      <main class="reader">
+        <header class="reader-header">
+          <div class="hero-panel">
+            <div>
+              <p class="eyebrow">Reader</p>
+              <h2 id="chapterTitle">Loading...</h2>
+              <p id="chapterMeta" class="chapter-meta"></p>
+            </div>
+
+            <div class="hero-actions">
+              <button id="prevChapter" class="nav-button" type="button">Previous</button>
+              <button id="nextChapter" class="nav-button" type="button">Next</button>
+            </div>
+          </div>
+
+          <div class="control-bar">
+            <label class="toggle">
+              <input id="showTransliteration" type="checkbox" checked>
+              <span>Transliteration</span>
+            </label>
+            <label class="toggle">
+              <input id="showEnglish" type="checkbox" checked>
+              <span>English</span>
+            </label>
+            <div class="stats-pill" id="chapterStats">Loading stats...</div>
+          </div>
+        </header>
+
+        <section class="reader-body">
+          <div id="basmalahCard" class="basmalah-card hidden"></div>
+          <div id="verseList" class="verse-list" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="commentaryOverlay" class="commentary-overlay hidden" aria-hidden="true">
+      <div class="commentary-panel" role="dialog" aria-modal="true" aria-labelledby="commentaryTitle">
+        <button id="closeCommentary" class="close-button" type="button" aria-label="Close commentary">Close</button>
+        <div class="commentary-header">
+          <p class="eyebrow">Verse Commentary</p>
+          <h3 id="commentaryTitle"></h3>
+          <p id="commentarySubtitle" class="commentary-subtitle"></p>
+        </div>
+        <div id="commentaryContext" class="commentary-context"></div>
+        <section class="commentary-tools" aria-label="Commentary tools">
+          <div class="commentary-tools-header">
+            <div>
+              <p class="eyebrow">Commentary Tools</p>
+              <h4>Reader Actions</h4>
+              <p class="commentary-tools-copy">
+                Copy the current verse commentary, including the saved English translation, for use elsewhere.
+              </p>
+            </div>
+            <button id="copyVerseCommentary" class="secondary-button" type="button">Copy All</button>
+          </div>
+          <p id="commentaryStatus" class="commentary-status hidden"></p>
+        </section>
+        <div id="commentaryBody" class="commentary-body"></div>
+      </div>
+    </div>
+
+    <template id="chapterItemTemplate">
+      <button class="chapter-item" type="button">
+        <span class="chapter-number"></span>
+        <span class="chapter-details">
+          <span class="chapter-english"></span>
+          <span class="chapter-transliteration"></span>
+        </span>
+        <span class="chapter-arabic"></span>
+      </button>
+    </template>
+
+    <template id="verseTemplate">
+      <article class="verse-card">
+        <div class="verse-topline">
+          <div class="verse-badge"></div>
+          <button class="commentary-trigger" type="button"></button>
+        </div>
+        <p class="verse-arabic"></p>
+        <p class="verse-transliteration"></p>
+        <p class="verse-english"></p>
+      </article>
+    </template>
+
+    <template id="commentaryEntryTemplate">
+      <article class="commentary-entry">
+        <div class="commentary-entry-topline">
+          <span class="commentary-entry-number"></span>
+          <span class="commentary-entry-scope"></span>
+        </div>
+        <div class="commentary-entry-actions">
+          <button class="entry-copy-button secondary-button" type="button">Copy</button>
+        </div>
+        <p class="commentary-entry-arabic-attribution"></p>
+        <p class="commentary-entry-arabic"></p>
+        <p class="commentary-entry-persian-attribution"></p>
+        <p class="commentary-entry-persian"></p>
+        <p class="commentary-entry-book"></p>
+        <p class="commentary-entry-references"></p>
+        <div class="commentary-entry-saved-translation">
+          <p class="commentary-entry-translation-label">Saved English translation</p>
+          <p class="commentary-entry-saved-translation-text"></p>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js?v=20260315-reader-only" type="module"></script>
+  </body>
+</html>
