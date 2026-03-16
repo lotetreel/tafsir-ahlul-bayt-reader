@@ -26,7 +26,7 @@ firebase deploy --only hosting:reader --project mizan-al-hikmah
 
 Current hosting URL:
 
-- [https://tafsir-ahlul-bayt-reader.web.app](https://tafsir-ahlul-bayt-reader.web.app)
+- [https://tafsir-ahlulbayt.web.app](https://tafsir-ahlulbayt.web.app)
 
 ## Source control
 
