@@ -1,3 +1,16 @@
+const ARABIC_SIZES = {
+  sm: "clamp(1.5rem, 3vw, 2.2rem)",
+  md: "clamp(2.1rem, 4vw, 3rem)",
+  lg: "clamp(2.7rem, 5vw, 3.8rem)",
+  xl: "clamp(3.4rem, 6.5vw, 4.8rem)",
+};
+
+const ENGLISH_SIZES = {
+  sm: "0.88rem",
+  md: "1rem",
+  lg: "1.2rem",
+};
+
 const state = {
   manifest: null,
   chaptersBySura: new Map(),
@@ -8,6 +21,10 @@ const state = {
   showTransliteration: readToggle("showTransliteration", true),
   showEnglish: readToggle("showEnglish", true),
   compactView: "list",
+  arabicFont: readSetting("arabicFont", "Scheherazade New"),
+  arabicSize: readSetting("arabicSize", "md"),
+  englishFont: readSetting("englishFont", "Manrope"),
+  englishSize: readSetting("englishSize", "md"),
 };
 
 const elements = {
@@ -36,6 +53,15 @@ const elements = {
   chapterItemTemplate: document.getElementById("chapterItemTemplate"),
   verseTemplate: document.getElementById("verseTemplate"),
   commentaryEntryTemplate: document.getElementById("commentaryEntryTemplate"),
+  heroPanel: document.querySelector(".hero-panel"),
+  openSettings: document.getElementById("openSettings"),
+  settingsFab: document.getElementById("settingsFab"),
+  closeSettings: document.getElementById("closeSettings"),
+  settingsOverlay: document.getElementById("settingsOverlay"),
+  arabicFontOptions: document.getElementById("arabicFontOptions"),
+  arabicSizeOptions: document.getElementById("arabicSizeOptions"),
+  englishFontOptions: document.getElementById("englishFontOptions"),
+  englishSizeOptions: document.getElementById("englishSizeOptions"),
 };
 
 boot().catch((error) => {
@@ -47,6 +73,7 @@ boot().catch((error) => {
 async function boot() {
   bindEvents();
   applyToggleState();
+  applySettings();
 
   const manifestResponse = await fetch("data/manifest.json");
   state.manifest = await manifestResponse.json();
@@ -119,8 +146,12 @@ function bindEvents() {
   });
 
   window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !elements.commentaryOverlay.classList.contains("hidden")) {
-      closeCommentary();
+    if (event.key === "Escape") {
+      if (!elements.settingsOverlay.classList.contains("hidden")) {
+        closeSettings();
+      } else if (!elements.commentaryOverlay.classList.contains("hidden")) {
+        closeCommentary();
+      }
     }
   });
 
@@ -132,6 +163,43 @@ function bindEvents() {
   });
 
   window.addEventListener("resize", applyCompactViewState);
+
+  elements.openSettings.addEventListener("click", openSettings);
+  elements.settingsFab.addEventListener("click", openSettings);
+  elements.closeSettings.addEventListener("click", closeSettings);
+
+  new IntersectionObserver(([entry]) => {
+    elements.settingsFab.classList.toggle("visible", !entry.isIntersecting);
+  }).observe(elements.heroPanel);
+  elements.settingsOverlay.addEventListener("click", (event) => {
+    if (event.target === elements.settingsOverlay) {
+      closeSettings();
+    }
+  });
+
+  bindSegment(elements.arabicFontOptions, (value) => {
+    state.arabicFont = value;
+    persistSetting("arabicFont", value);
+    applySettings();
+  });
+
+  bindSegment(elements.arabicSizeOptions, (value) => {
+    state.arabicSize = value;
+    persistSetting("arabicSize", value);
+    applySettings();
+  });
+
+  bindSegment(elements.englishFontOptions, (value) => {
+    state.englishFont = value;
+    persistSetting("englishFont", value);
+    applySettings();
+  });
+
+  bindSegment(elements.englishSizeOptions, (value) => {
+    state.englishSize = value;
+    persistSetting("englishSize", value);
+    applySettings();
+  });
 }
 
 async function loadSurah(sura, options = {}) {
@@ -506,6 +574,59 @@ function setStatusMessage(message, isError = false) {
   elements.commentaryStatus.textContent = message;
   elements.commentaryStatus.classList.toggle("hidden", !message);
   elements.commentaryStatus.classList.toggle("error", Boolean(message) && isError);
+}
+
+function openSettings() {
+  elements.settingsOverlay.classList.remove("hidden");
+  elements.settingsOverlay.setAttribute("aria-hidden", "false");
+  syncSettingsUI();
+  document.body.style.overflow = "hidden";
+}
+
+function closeSettings() {
+  elements.settingsOverlay.classList.add("hidden");
+  elements.settingsOverlay.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function applySettings() {
+  const root = document.documentElement;
+  root.style.setProperty("--arabic-font", `"${state.arabicFont}", serif`);
+  root.style.setProperty("--arabic-size", ARABIC_SIZES[state.arabicSize]);
+  root.style.setProperty("--english-font", `"${state.englishFont}", sans-serif`);
+  root.style.setProperty("--english-size", ENGLISH_SIZES[state.englishSize]);
+}
+
+function syncSettingsUI() {
+  syncSegment(elements.arabicFontOptions, state.arabicFont);
+  syncSegment(elements.arabicSizeOptions, state.arabicSize);
+  syncSegment(elements.englishFontOptions, state.englishFont);
+  syncSegment(elements.englishSizeOptions, state.englishSize);
+}
+
+function bindSegment(container, onChange) {
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest(".settings-option");
+    if (!button) {
+      return;
+    }
+    syncSegment(container, button.dataset.value);
+    onChange(button.dataset.value);
+  });
+}
+
+function syncSegment(container, activeValue) {
+  for (const button of container.querySelectorAll(".settings-option")) {
+    button.classList.toggle("active", button.dataset.value === activeValue);
+  }
+}
+
+function readSetting(key, fallback) {
+  return window.localStorage.getItem(key) ?? fallback;
+}
+
+function persistSetting(key, value) {
+  window.localStorage.setItem(key, value);
 }
 
 function readToggle(key, fallback) {

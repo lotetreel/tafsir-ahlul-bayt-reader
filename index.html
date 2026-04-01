@@ -7,10 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&family=Scheherazade+New:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260317-surah-book-button">
+    <link rel="stylesheet" href="styles.css?v=20260401-settings">
   </head>
   <body>
     <div class="page-shell">
@@ -65,20 +65,17 @@
                 </span>
                 <span class="text-wrapper">Surah List</span>
               </button>
+              <button id="openSettings" class="settings-button" type="button" aria-label="Open settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/>
+                </svg>
+              </button>
               <button id="prevChapter" class="nav-button" type="button">Previous</button>
               <button id="nextChapter" class="nav-button" type="button">Next</button>
             </div>
           </div>
 
           <div class="control-bar">
-            <label class="toggle">
-              <input id="showTransliteration" type="checkbox" checked>
-              <span>Transliteration</span>
-            </label>
-            <label class="toggle">
-              <input id="showEnglish" type="checkbox" checked>
-              <span>English</span>
-            </label>
             <div class="stats-pill" id="chapterStats">Loading stats...</div>
           </div>
         </header>
@@ -113,6 +110,78 @@
           <p id="commentaryStatus" class="commentary-status hidden"></p>
         </section>
         <div id="commentaryBody" class="commentary-body"></div>
+      </div>
+    </div>
+
+    <button id="settingsFab" class="settings-fab" type="button" aria-label="Open settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/>
+      </svg>
+    </button>
+
+    <div id="settingsOverlay" class="settings-overlay hidden" aria-hidden="true">
+      <div class="settings-panel" role="dialog" aria-modal="true" aria-label="Reader settings">
+        <div class="settings-header">
+          <div>
+            <p class="eyebrow">Reader</p>
+            <h3>Settings</h3>
+          </div>
+          <button id="closeSettings" class="close-button" type="button" aria-label="Close settings">Close</button>
+        </div>
+        <div class="settings-body">
+          <section class="settings-section">
+            <h4 class="settings-section-title">Display</h4>
+            <div class="settings-toggles">
+              <label class="toggle">
+                <input id="showTransliteration" type="checkbox">
+                <span>Transliteration</span>
+              </label>
+              <label class="toggle">
+                <input id="showEnglish" type="checkbox">
+                <span>English</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h4 class="settings-section-title">Arabic Text</h4>
+            <div class="settings-row">
+              <span class="settings-row-label">Font</span>
+              <div class="settings-segment" id="arabicFontOptions">
+                <button class="settings-option" type="button" data-value="Amiri">Amiri</button>
+                <button class="settings-option" type="button" data-value="Scheherazade New">Scheherazade</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span class="settings-row-label">Size</span>
+              <div class="settings-segment" id="arabicSizeOptions">
+                <button class="settings-option" type="button" data-value="sm">S</button>
+                <button class="settings-option" type="button" data-value="md">M</button>
+                <button class="settings-option" type="button" data-value="lg">L</button>
+                <button class="settings-option" type="button" data-value="xl">XL</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h4 class="settings-section-title">English Text</h4>
+            <div class="settings-row">
+              <span class="settings-row-label">Font</span>
+              <div class="settings-segment" id="englishFontOptions">
+                <button class="settings-option" type="button" data-value="Manrope">Manrope</button>
+                <button class="settings-option" type="button" data-value="Alegreya">Alegreya</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span class="settings-row-label">Size</span>
+              <div class="settings-segment" id="englishSizeOptions">
+                <button class="settings-option" type="button" data-value="sm">S</button>
+                <button class="settings-option" type="button" data-value="md">M</button>
+                <button class="settings-option" type="button" data-value="lg">L</button>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
 
@@ -161,6 +230,6 @@
       </article>
     </template>
 
-    <script src="app.js?v=20260317-surah-book-button" type="module"></script>
+    <script src="app.js?v=20260401-settings" type="module"></script>
   </body>
 </html>

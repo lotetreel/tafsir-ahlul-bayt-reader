@@ -10,6 +10,12 @@
   --accent-soft: #d8e8dd;
   --accent-warm: #a87b31;
   --shadow: 0 24px 50px rgba(31, 44, 36, 0.12);
+
+  /* settings-driven */
+  --arabic-font: "Scheherazade New", serif;
+  --arabic-size: clamp(2.1rem, 4vw, 3rem);
+  --english-font: "Manrope", sans-serif;
+  --english-size: 1rem;
 }
 
 * {
@@ -569,10 +575,10 @@ body {
 }
 
 .verse-arabic {
-  font-family: "Amiri", serif;
+  font-family: var(--arabic-font);
   direction: rtl;
   text-align: right;
-  font-size: clamp(2.1rem, 4vw, 3rem);
+  font-size: var(--arabic-size);
   line-height: 1.9;
   margin: 18px 0 12px;
 }
@@ -591,7 +597,8 @@ body {
 }
 
 .verse-english {
-  font-size: 1rem;
+  font-family: var(--english-font);
+  font-size: var(--english-size);
 }
 
 .commentary-overlay {
@@ -784,6 +791,190 @@ body {
 .commentary-entry-saved-translation-text {
   white-space: pre-wrap;
   line-height: 1.8;
+}
+
+.settings-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 15;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: #f7f2e6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(16, 40, 28, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.82);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.settings-fab.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.settings-fab:hover,
+.settings-fab:focus-visible {
+  background: #194c37;
+  outline: none;
+}
+
+.settings-fab:active {
+  transform: scale(0.93);
+}
+
+.settings-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(31, 95, 69, 0.1);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.settings-button:hover,
+.settings-button:focus-visible {
+  background: rgba(31, 95, 69, 0.18);
+  outline: none;
+}
+
+.settings-button:active {
+  transform: scale(0.93);
+}
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 34, 28, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 20;
+}
+
+.settings-panel {
+  width: min(340px, 100%);
+  height: 100%;
+  overflow: auto;
+  background: linear-gradient(180deg, rgba(255, 251, 243, 0.99), rgba(250, 245, 234, 0.99));
+  border-left: 1px solid rgba(31, 95, 69, 0.12);
+  box-shadow: -20px 0 60px rgba(16, 29, 24, 0.2);
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+  animation: settingsSlideIn 200ms ease;
+}
+
+@keyframes settingsSlideIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-panel { animation: none; }
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.settings-header h3 {
+  margin: 4px 0 0;
+  font-family: "Alegreya", serif;
+  font-size: 1.4rem;
+}
+
+.settings-body {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settings-section-title {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.settings-toggles {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-row-label {
+  font-size: 0.88rem;
+  color: var(--muted);
+  width: 36px;
+  flex: 0 0 36px;
+}
+
+.settings-segment {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.settings-option {
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 240, 0.72);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.settings-option:hover,
+.settings-option:focus-visible {
+  background: rgba(31, 95, 69, 0.1);
+  border-color: rgba(31, 95, 69, 0.3);
+  outline: none;
+}
+
+.settings-option.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #f7f2e6;
 }
 
 .manager-shell {
