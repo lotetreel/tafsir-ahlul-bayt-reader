@@ -7,9 +7,14 @@ on:
     branches:
       - main
     paths:
-      - "web/**"
+      - ".nojekyll"
+      - "app.js"
+      - "index.html"
+      - "styles.css"
+      - "data/**"
       - "firebase.json"
       - ".firebaserc"
+      - "scripts/prepare-hosting.js"
       - ".github/workflows/firebase-hosting-pull-request.yml"
       - ".github/workflows/firebase-hosting-merge.yml"
   workflow_dispatch:
@@ -27,6 +32,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - run: node scripts/prepare-hosting.js
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

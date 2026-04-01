@@ -1,7 +1,10 @@
 {
   "hosting": {
     "target": "reader",
-    "public": "web",
+    "public": "deploy",
+    "predeploy": [
+      "node scripts/prepare-hosting.js"
+    ],
     "ignore": [
       "firebase.json",
       ".firebaserc",
