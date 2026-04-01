@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&family=Scheherazade+New:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260401-vernav">
+    <link rel="stylesheet" href="styles.css?v=20260401-themes">
   </head>
   <body>
     <div class="page-shell">
@@ -129,6 +129,15 @@
           <button id="closeSettings" class="close-button" type="button" aria-label="Close settings">Close</button>
         </div>
         <div class="settings-body">
+          <section class="settings-section">
+            <h4 class="settings-section-title">Theme</h4>
+            <div class="settings-segment" id="themeOptions">
+              <button class="settings-option" type="button" data-value="sepia">Sepia</button>
+              <button class="settings-option" type="button" data-value="light">Light</button>
+              <button class="settings-option" type="button" data-value="dark">Dark</button>
+            </div>
+          </section>
+
           <section class="settings-section">
             <h4 class="settings-section-title">Display</h4>
             <div class="settings-toggles">
@@ -265,6 +274,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=20260401-vernav" type="module"></script>
+    <script src="app.js?v=20260401-themes" type="module"></script>
   </body>
 </html>

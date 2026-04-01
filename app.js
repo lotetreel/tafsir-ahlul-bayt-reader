@@ -21,6 +21,7 @@ const state = {
   showTransliteration: readToggle("showTransliteration", true),
   showEnglish: readToggle("showEnglish", true),
   compactView: "list",
+  theme: readSetting("theme", "sepia"),
   arabicFont: readSetting("arabicFont", "Scheherazade New"),
   arabicSize: readSetting("arabicSize", "md"),
   englishFont: readSetting("englishFont", "Manrope"),
@@ -61,6 +62,7 @@ const elements = {
   settingsFab: document.getElementById("settingsFab"),
   closeSettings: document.getElementById("closeSettings"),
   settingsOverlay: document.getElementById("settingsOverlay"),
+  themeOptions: document.getElementById("themeOptions"),
   arabicFontOptions: document.getElementById("arabicFontOptions"),
   arabicSizeOptions: document.getElementById("arabicSizeOptions"),
   englishFontOptions: document.getElementById("englishFontOptions"),
@@ -84,6 +86,7 @@ async function boot() {
   bindEvents();
   applyToggleState();
   applySettings();
+  applyTheme();
 
   const manifestResponse = await fetch("data/manifest.json");
   state.manifest = await manifestResponse.json();
@@ -187,6 +190,12 @@ function bindEvents() {
     if (event.target === elements.settingsOverlay) {
       closeSettings();
     }
+  });
+
+  bindSegment(elements.themeOptions, (value) => {
+    state.theme = value;
+    persistSetting("theme", value);
+    applyTheme();
   });
 
   bindSegment(elements.arabicFontOptions, (value) => {
@@ -617,6 +626,10 @@ function closeSettings() {
   document.body.style.overflow = "";
 }
 
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+}
+
 function applySettings() {
   const root = document.documentElement;
   root.style.setProperty("--arabic-font", `"${state.arabicFont}", serif`);
@@ -626,6 +639,7 @@ function applySettings() {
 }
 
 function syncSettingsUI() {
+  syncSegment(elements.themeOptions, state.theme);
   syncSegment(elements.arabicFontOptions, state.arabicFont);
   syncSegment(elements.arabicSizeOptions, state.arabicSize);
   syncSegment(elements.englishFontOptions, state.englishFont);

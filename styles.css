@@ -11,6 +11,16 @@
   --accent-warm: #a87b31;
   --shadow: 0 24px 50px rgba(31, 44, 36, 0.12);
 
+  /* theme-adjustable surfaces */
+  --sidebar-bg: linear-gradient(180deg, rgba(25, 71, 53, 0.94), rgba(22, 56, 43, 0.96));
+  --hero-bg: linear-gradient(135deg, rgba(255, 252, 245, 0.86), rgba(246, 239, 223, 0.94));
+  --overlay-bg: linear-gradient(180deg, rgba(255, 251, 243, 0.98), rgba(250, 245, 234, 0.98));
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --surface-bg: rgba(255, 250, 240, 0.72);
+  --input-surface: rgba(255, 255, 255, 0.72);
+  --scrim: rgba(19, 34, 28, 0.55);
+  --settings-scrim: rgba(19, 34, 28, 0.45);
+
   /* settings-driven */
   --arabic-font: "Scheherazade New", serif;
   --arabic-size: clamp(2.1rem, 4vw, 3rem);
@@ -48,7 +58,7 @@ body {
 
 .sidebar {
   border-right: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(25, 71, 53, 0.94), rgba(22, 56, 43, 0.96));
+  background: var(--sidebar-bg);
   color: #f4eddf;
   padding: 28px 22px;
   position: sticky;
@@ -176,7 +186,7 @@ body {
 }
 
 .hero-panel {
-  background: linear-gradient(135deg, rgba(255, 252, 245, 0.86), rgba(246, 239, 223, 0.94));
+  background: var(--hero-bg);
   border: 1px solid rgba(31, 95, 69, 0.12);
   border-radius: 28px;
   box-shadow: var(--shadow);
@@ -480,7 +490,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: rgba(255, 250, 240, 0.72);
+  background: var(--surface-bg);
   border: 1px solid var(--line);
   border-radius: 999px;
   box-shadow: 0 10px 22px rgba(31, 44, 36, 0.05);
@@ -604,7 +614,7 @@ body {
 .commentary-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(19, 34, 28, 0.55);
+  background: var(--scrim);
   backdrop-filter: blur(8px);
   padding: 20px;
   display: grid;
@@ -616,7 +626,7 @@ body {
   width: min(980px, 100%);
   max-height: calc(100vh - 40px);
   overflow: auto;
-  background: linear-gradient(180deg, rgba(255, 251, 243, 0.98), rgba(250, 245, 234, 0.98));
+  background: var(--overlay-bg);
   border-radius: 28px;
   border: 1px solid rgba(31, 95, 69, 0.12);
   box-shadow: 0 30px 70px rgba(16, 29, 24, 0.24);
@@ -639,7 +649,7 @@ body {
 }
 
 .commentary-tools {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--card-bg);
   border: 1px solid rgba(31, 95, 69, 0.1);
   border-radius: 22px;
   padding: 18px;
@@ -714,7 +724,7 @@ body {
 }
 
 .commentary-entry {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--card-bg);
   border: 1px solid rgba(31, 49, 36, 0.09);
   border-radius: 22px;
   padding: 18px;
@@ -859,7 +869,7 @@ body {
 .settings-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(19, 34, 28, 0.45);
+  background: var(--settings-scrim);
   backdrop-filter: blur(6px);
   display: flex;
   justify-content: flex-end;
@@ -870,7 +880,7 @@ body {
   width: min(340px, 100%);
   height: 100%;
   overflow: auto;
-  background: linear-gradient(180deg, rgba(255, 251, 243, 0.99), rgba(250, 245, 234, 0.99));
+  background: var(--overlay-bg);
   border-left: 1px solid rgba(31, 95, 69, 0.12);
   box-shadow: -20px 0 60px rgba(16, 29, 24, 0.2);
   padding: 24px;
@@ -956,7 +966,7 @@ body {
   padding: 7px 13px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 250, 240, 0.72);
+  background: var(--surface-bg);
   color: var(--ink);
   font: inherit;
   font-size: 0.88rem;
@@ -1150,12 +1160,87 @@ body {
   color: var(--muted);
 }
 
+/* ── Themes ─────────────────────────────────────────────────── */
+
+[data-theme="dark"] {
+  --bg: #131c17;
+  --bg-soft: #1a2520;
+  --panel: rgba(22, 34, 26, 0.9);
+  --panel-strong: #1e2e24;
+  --ink: #d8e8dc;
+  --muted: #7aaa90;
+  --line: rgba(200, 230, 210, 0.1);
+  --accent: #4caf80;
+  --accent-soft: rgba(76, 175, 128, 0.22);
+  --accent-warm: #d4a04a;
+  --shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+  --sidebar-bg: linear-gradient(180deg, rgba(8, 16, 11, 0.98), rgba(6, 12, 9, 0.99));
+  --hero-bg: linear-gradient(135deg, rgba(22, 36, 28, 0.92), rgba(18, 30, 23, 0.96));
+  --overlay-bg: linear-gradient(180deg, rgba(16, 26, 20, 0.99), rgba(13, 21, 16, 0.99));
+  --card-bg: rgba(28, 44, 34, 0.7);
+  --surface-bg: rgba(26, 42, 32, 0.75);
+  --input-surface: rgba(26, 42, 32, 0.75);
+  --scrim: rgba(4, 10, 6, 0.72);
+  --settings-scrim: rgba(4, 10, 6, 0.62);
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top left, rgba(76, 175, 128, 0.07), transparent 28%),
+    radial-gradient(circle at top right, rgba(31, 95, 69, 0.1), transparent 24%),
+    linear-gradient(180deg, #0c1510 0%, #131c17 42%, #101810 100%);
+}
+
+[data-theme="dark"] .stats-pill {
+  background: rgba(76, 175, 128, 0.1);
+  border-color: rgba(76, 175, 128, 0.18);
+}
+
+[data-theme="dark"] .commentary-entry-number,
+[data-theme="dark"] .commentary-entry-scope,
+[data-theme="dark"] .vernav-item-num {
+  background: rgba(76, 175, 128, 0.14);
+}
+
+[data-theme="dark"] .verse-card::before {
+  background: radial-gradient(circle, rgba(212, 160, 74, 0.1), transparent 68%);
+}
+
+[data-theme="light"] {
+  --bg: #e8edf2;
+  --bg-soft: #f4f7fa;
+  --panel: rgba(255, 255, 255, 0.88);
+  --panel-strong: #ffffff;
+  --ink: #1a2630;
+  --muted: #4e6070;
+  --line: rgba(20, 40, 60, 0.12);
+  --accent: #1f5f45;
+  --accent-soft: #d4e8dd;
+  --accent-warm: #a87b31;
+  --shadow: 0 24px 50px rgba(0, 20, 50, 0.09);
+  --sidebar-bg: linear-gradient(180deg, rgba(25, 71, 53, 0.96), rgba(20, 54, 40, 0.98));
+  --hero-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(244, 248, 255, 0.96));
+  --overlay-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 251, 255, 0.99));
+  --card-bg: rgba(255, 255, 255, 0.84);
+  --surface-bg: rgba(255, 255, 255, 0.84);
+  --input-surface: rgba(255, 255, 255, 0.92);
+  --scrim: rgba(15, 30, 50, 0.5);
+  --settings-scrim: rgba(15, 30, 50, 0.4);
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(circle at top left, rgba(168, 123, 49, 0.06), transparent 28%),
+    radial-gradient(circle at top right, rgba(31, 95, 69, 0.07), transparent 24%),
+    linear-gradient(180deg, #dce3ec 0%, #e8edf2 42%, #ecf0f5 100%);
+}
+
 /* ── Verse Nav Overlay ──────────────────────────────────────── */
 
 .vernav-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(19, 34, 28, 0.55);
+  background: var(--scrim);
   backdrop-filter: blur(8px);
   padding: 20px;
   display: grid;
@@ -1170,7 +1255,7 @@ body {
   flex-direction: column;
   gap: 18px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 251, 243, 0.98), rgba(250, 245, 234, 0.98));
+  background: var(--overlay-bg);
   border-radius: 28px;
   border: 1px solid rgba(31, 95, 69, 0.12);
   box-shadow: 0 30px 70px rgba(16, 29, 24, 0.24);
@@ -1236,7 +1321,7 @@ body {
 .vernav-search input {
   width: 100%;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--input-surface);
   color: var(--ink);
   border-radius: 14px;
   padding: 10px 14px;
@@ -1278,7 +1363,7 @@ body {
   align-items: center;
   gap: 10px;
   border: 1px solid rgba(31, 49, 36, 0.09);
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card-bg);
   color: var(--ink);
   border-radius: 14px;
   padding: 9px 11px;
@@ -1340,7 +1425,7 @@ body {
   display: grid;
   place-items: center;
   border: 1px solid rgba(31, 49, 36, 0.09);
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card-bg);
   color: var(--ink);
   font: inherit;
   font-size: 0.84rem;
