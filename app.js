@@ -25,6 +25,9 @@ const state = {
   arabicSize: readSetting("arabicSize", "md"),
   englishFont: readSetting("englishFont", "Manrope"),
   englishSize: readSetting("englishSize", "md"),
+  verseNavSelectedSura: null,
+  verseNavSelectedAya: null,
+  verseNavSurahQuery: "",
 };
 
 const elements = {
@@ -62,6 +65,13 @@ const elements = {
   arabicSizeOptions: document.getElementById("arabicSizeOptions"),
   englishFontOptions: document.getElementById("englishFontOptions"),
   englishSizeOptions: document.getElementById("englishSizeOptions"),
+  openVerseNav: document.getElementById("openVerseNav"),
+  verseNavOverlay: document.getElementById("verseNavOverlay"),
+  closeVerseNav: document.getElementById("closeVerseNav"),
+  verseNavSearch: document.getElementById("verseNavSearch"),
+  verseNavSurahList: document.getElementById("verseNavSurahList"),
+  verseNavAyahList: document.getElementById("verseNavAyahList"),
+  verseNavGo: document.getElementById("verseNavGo"),
 };
 
 boot().catch((error) => {
@@ -149,6 +159,8 @@ function bindEvents() {
     if (event.key === "Escape") {
       if (!elements.settingsOverlay.classList.contains("hidden")) {
         closeSettings();
+      } else if (!elements.verseNavOverlay.classList.contains("hidden")) {
+        closeVerseNav();
       } else if (!elements.commentaryOverlay.classList.contains("hidden")) {
         closeCommentary();
       }
@@ -199,6 +211,21 @@ function bindEvents() {
     state.englishSize = value;
     persistSetting("englishSize", value);
     applySettings();
+  });
+
+  elements.openVerseNav.addEventListener("click", openVerseNav);
+  elements.closeVerseNav.addEventListener("click", closeVerseNav);
+  elements.verseNavOverlay.addEventListener("click", (event) => {
+    if (event.target === elements.verseNavOverlay) closeVerseNav();
+  });
+  elements.verseNavSearch.addEventListener("input", (event) => {
+    state.verseNavSurahQuery = event.target.value.trim().toLowerCase();
+    renderVerseNavSurahList();
+  });
+  elements.verseNavGo.addEventListener("click", () => {
+    if (state.verseNavSelectedSura !== null && state.verseNavSelectedAya !== null) {
+      navigateToVerse(state.verseNavSelectedSura, state.verseNavSelectedAya);
+    }
   });
 }
 
@@ -282,6 +309,7 @@ function renderVerses() {
   const fragment = document.createDocumentFragment();
   for (const verse of verses) {
     const card = elements.verseTemplate.content.firstElementChild.cloneNode(true);
+    card.dataset.aya = verse.aya;
     card.querySelector(".verse-badge").textContent = verse.aya;
     card.querySelector(".verse-arabic").textContent = verse.arabic;
 
@@ -644,4 +672,125 @@ function persistToggle(key, value) {
 function applyToggleState() {
   elements.showTransliteration.checked = state.showTransliteration;
   elements.showEnglish.checked = state.showEnglish;
+}
+
+function openVerseNav() {
+  closeSettings();
+  state.verseNavSelectedSura = state.currentSura;
+  state.verseNavSelectedAya = 1;
+  state.verseNavSurahQuery = "";
+  elements.verseNavSearch.value = "";
+  renderVerseNavSurahList(true);
+  renderVerseNavAyahList();
+  elements.verseNavOverlay.classList.remove("hidden");
+  elements.verseNavOverlay.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  elements.verseNavSearch.focus();
+}
+
+function closeVerseNav() {
+  elements.verseNavOverlay.classList.add("hidden");
+  elements.verseNavOverlay.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function renderVerseNavSurahList(scrollToActive = false) {
+  const chapters = state.manifest?.chapters ?? [];
+  const filtered = chapters.filter((c) => matchesChapterSearch(c, state.verseNavSurahQuery));
+  const fragment = document.createDocumentFragment();
+
+  for (const chapter of filtered) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "vernav-item";
+    if (chapter.sura === state.verseNavSelectedSura) {
+      btn.classList.add("active");
+    }
+
+    const num = document.createElement("span");
+    num.className = "vernav-item-num";
+    num.textContent = chapter.sura;
+
+    const main = document.createElement("span");
+    main.className = "vernav-item-main";
+    main.textContent = chapter.transliteration;
+
+    const sub = document.createElement("span");
+    sub.className = "vernav-item-sub";
+    sub.textContent = chapter.name_english;
+    main.append(sub);
+
+    const arabic = document.createElement("span");
+    arabic.className = "vernav-item-arabic";
+    arabic.textContent = chapter.name_arabic;
+
+    btn.append(num, main, arabic);
+    btn.addEventListener("click", () => {
+      state.verseNavSelectedSura = chapter.sura;
+      state.verseNavSelectedAya = 1;
+      renderVerseNavSurahList();
+      renderVerseNavAyahList();
+    });
+    fragment.append(btn);
+  }
+
+  elements.verseNavSurahList.replaceChildren(fragment);
+
+  if (scrollToActive) {
+    requestAnimationFrame(() => {
+      elements.verseNavSurahList.querySelector(".vernav-item.active")?.scrollIntoView({ block: "nearest" });
+    });
+  }
+}
+
+function renderVerseNavAyahList() {
+  if (state.verseNavSelectedSura === null) {
+    const p = document.createElement("p");
+    p.className = "vernav-empty";
+    p.textContent = "Select a surah first";
+    elements.verseNavAyahList.replaceChildren(p);
+    elements.verseNavGo.disabled = true;
+    return;
+  }
+
+  const chapter = state.chaptersBySura.get(state.verseNavSelectedSura);
+  if (!chapter) return;
+
+  const fragment = document.createDocumentFragment();
+  for (let i = 1; i <= chapter.verse_count; i++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "vernav-ayah-btn";
+    if (i === state.verseNavSelectedAya) {
+      btn.classList.add("active");
+    }
+    btn.textContent = i;
+    const aya = i;
+    btn.addEventListener("click", () => {
+      state.verseNavSelectedAya = aya;
+      for (const b of elements.verseNavAyahList.querySelectorAll(".vernav-ayah-btn")) {
+        b.classList.toggle("active", Number(b.textContent) === aya);
+      }
+    });
+    fragment.append(btn);
+  }
+
+  elements.verseNavAyahList.replaceChildren(fragment);
+  elements.verseNavGo.disabled = false;
+
+  requestAnimationFrame(() => {
+    elements.verseNavAyahList.querySelector(".vernav-ayah-btn.active")?.scrollIntoView({ block: "nearest" });
+  });
+}
+
+async function navigateToVerse(sura, aya) {
+  closeVerseNav();
+  if (sura !== state.currentSura) {
+    await loadSurah(sura, { revealReader: true });
+  } else {
+    showCompactReaderView();
+  }
+  requestAnimationFrame(() => {
+    elements.verseList.querySelector(`[data-aya="${aya}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }

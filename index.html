@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;700&family=Scheherazade+New:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260401-settings">
+    <link rel="stylesheet" href="styles.css?v=20260401-vernav">
   </head>
   <body>
     <div class="page-shell">
@@ -164,6 +164,11 @@
           </section>
 
           <section class="settings-section">
+            <h4 class="settings-section-title">Navigation</h4>
+            <button id="openVerseNav" class="secondary-button vernav-open-btn" type="button">Go to Surah &amp; Verse</button>
+          </section>
+
+          <section class="settings-section">
             <h4 class="settings-section-title">English Text</h4>
             <div class="settings-row">
               <span class="settings-row-label">Font</span>
@@ -230,6 +235,36 @@
       </article>
     </template>
 
-    <script src="app.js?v=20260401-settings" type="module"></script>
+    <div id="verseNavOverlay" class="vernav-overlay hidden" aria-hidden="true">
+      <div class="vernav-panel" role="dialog" aria-modal="true" aria-label="Go to verse">
+        <div class="vernav-header">
+          <div>
+            <p class="eyebrow">Navigation</p>
+            <h3>Go to Verse</h3>
+          </div>
+          <button id="closeVerseNav" class="close-button vernav-close" type="button" aria-label="Close navigation">Close</button>
+        </div>
+        <div class="vernav-columns">
+          <div class="vernav-col">
+            <p class="vernav-col-label">Surah</p>
+            <label class="vernav-search" for="verseNavSearch">
+              <input id="verseNavSearch" type="search" placeholder="Search by name or number…">
+            </label>
+            <div id="verseNavSurahList" class="vernav-list" aria-label="Surah list"></div>
+          </div>
+          <div class="vernav-col">
+            <p class="vernav-col-label" id="verseNavAyahLabel">Ayah</p>
+            <div id="verseNavAyahList" class="vernav-list vernav-ayah-grid">
+              <p class="vernav-empty">Select a surah first</p>
+            </div>
+            <div class="vernav-go-row">
+              <button id="verseNavGo" class="nav-button" type="button" disabled>Go</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js?v=20260401-vernav" type="module"></script>
   </body>
 </html>
