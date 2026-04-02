@@ -504,6 +504,10 @@ body {
   color: var(--muted);
 }
 
+.surah-intro-button {
+  white-space: nowrap;
+}
+
 .reader-body {
   display: grid;
   gap: 18px;
@@ -710,6 +714,12 @@ body {
   border-radius: 22px;
   padding: 18px;
   margin-bottom: 18px;
+}
+
+.commentary-context-note {
+  margin: 0;
+  line-height: 1.75;
+  color: var(--muted);
 }
 
 .commentary-context .verse-arabic {

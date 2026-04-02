@@ -11,12 +11,14 @@ const ENGLISH_SIZES = {
   lg: "1.2rem",
 };
 
+const INTRO_SCOPE_PATTERN = /\bintro\b|\u0645\u0642\u062f\u0645[\u0647\u0629]/i;
+
 const state = {
   manifest: null,
   chaptersBySura: new Map(),
   currentSura: 1,
   currentSurahData: null,
-  currentCommentaryVerse: null,
+  currentCommentarySelection: null,
   searchQuery: "",
   showTransliteration: readToggle("showTransliteration", true),
   showEnglish: readToggle("showEnglish", true),
@@ -39,6 +41,7 @@ const elements = {
   chapterTitle: document.getElementById("chapterTitle"),
   chapterMeta: document.getElementById("chapterMeta"),
   chapterStats: document.getElementById("chapterStats"),
+  surahIntroButton: document.getElementById("surahIntroButton"),
   basmalahCard: document.getElementById("basmalahCard"),
   verseList: document.getElementById("verseList"),
   showChapterList: document.getElementById("showChapterList"),
@@ -47,7 +50,9 @@ const elements = {
   showTransliteration: document.getElementById("showTransliteration"),
   showEnglish: document.getElementById("showEnglish"),
   commentaryOverlay: document.getElementById("commentaryOverlay"),
+  commentaryPanel: document.querySelector(".commentary-panel"),
   closeCommentary: document.getElementById("closeCommentary"),
+  commentaryEyebrow: document.getElementById("commentaryEyebrow"),
   commentaryTitle: document.getElementById("commentaryTitle"),
   commentarySubtitle: document.getElementById("commentarySubtitle"),
   commentaryContext: document.getElementById("commentaryContext"),
@@ -140,15 +145,17 @@ function bindEvents() {
     renderVerses();
   });
 
+  elements.surahIntroButton.addEventListener("click", openSurahIntroCommentary);
+
   elements.copyVerseCommentary.addEventListener("click", async () => {
-    if (!state.currentCommentaryVerse || !state.currentSurahData) {
+    if (!state.currentCommentarySelection) {
       return;
     }
-    const payload = formatVerseCommentaryForCopy(
-      state.currentCommentaryVerse,
-      state.currentSurahData.chapter,
-    );
-    await copyText(payload, "Copied commentary for this verse.");
+    const payload = formatCommentarySelectionForCopy(state.currentCommentarySelection);
+    const successMessage = state.currentCommentarySelection.kind === "surah-intro"
+      ? "Copied surah introduction commentary."
+      : "Copied commentary for this verse.";
+    await copyText(payload, successMessage);
   });
 
   elements.closeCommentary.addEventListener("click", closeCommentary);
@@ -246,8 +253,10 @@ async function loadSurah(sura, options = {}) {
 
   closeCommentary();
   state.currentSura = sura;
+  state.currentSurahData = null;
   window.location.hash = String(sura);
   updateHeader(chapter, null);
+  renderSurahIntroButton();
   renderChapterList();
 
   const response = await fetch(chapter.file);
@@ -312,8 +321,10 @@ function renderVerses() {
   }
 
   const { chapter, verses } = surahData;
+  const surahIntroEntries = getSurahIntroEntries(surahData);
   elements.basmalahCard.textContent = chapter.display_basmalah || "";
   elements.basmalahCard.classList.toggle("hidden", !chapter.display_basmalah);
+  renderSurahIntroButton();
 
   const fragment = document.createDocumentFragment();
   for (const verse of verses) {
@@ -331,12 +342,15 @@ function renderVerses() {
     englishEl.classList.toggle("hidden", !state.showEnglish);
 
     const commentaryButton = card.querySelector(".commentary-trigger");
-    if (verse.commentary.has_commentary) {
-      commentaryButton.textContent = `Commentary (${verse.commentary.entry_count})`;
+    const verseEntries = getVerseCommentaryEntries(verse);
+    if (verseEntries.length > 0) {
+      commentaryButton.textContent = `Commentary (${verseEntries.length})`;
       commentaryButton.classList.add("has-commentary");
       commentaryButton.addEventListener("click", () => openCommentary(verse));
     } else {
-      commentaryButton.textContent = "No commentary";
+      commentaryButton.textContent = verse.aya === 1 && surahIntroEntries.length > 0
+        ? "No verse commentary"
+        : "No commentary";
       commentaryButton.disabled = true;
     }
 
@@ -344,6 +358,42 @@ function renderVerses() {
   }
 
   elements.verseList.replaceChildren(fragment);
+}
+
+function renderSurahIntroButton() {
+  const introEntries = getSurahIntroEntries(state.currentSurahData);
+  if (!introEntries.length) {
+    elements.surahIntroButton.textContent = "";
+    elements.surahIntroButton.classList.add("hidden");
+    return;
+  }
+
+  elements.surahIntroButton.textContent = `Surah Intro Hadith (${introEntries.length})`;
+  elements.surahIntroButton.classList.remove("hidden");
+}
+
+function getSurahIntroEntries(surahData) {
+  return surahData?.verses?.[0]?.commentary?.entries?.filter(isSurahIntroEntry) ?? [];
+}
+
+function getVerseCommentaryEntries(verse) {
+  return verse.commentary.entries.filter((entry) => !isSurahIntroEntry(entry));
+}
+
+function isSurahIntroEntry(entry) {
+  return INTRO_SCOPE_PATTERN.test(normalizeCommentaryScope(entry?.scope));
+}
+
+function isIntroCommentaryEntry(entry) {
+  const scope = normalizeCommentaryScope(entry?.scope);
+  return scope.includes("intro") || scope.includes("مقدمه") || scope.includes("مقدمة");
+}
+
+function normalizeCommentaryScope(scope) {
+  return String(scope || "")
+    .replace(/[\u200c\u200e\u200f]/g, "")
+    .trim()
+    .toLowerCase();
 }
 
 function isCompactLayout() {
@@ -399,52 +449,120 @@ function openCommentary(verse) {
     return;
   }
 
-  state.currentCommentaryVerse = verse;
-  const chapter = state.currentSurahData.chapter;
-  elements.commentaryTitle.textContent = `${chapter.transliteration} ${verse.aya}`;
-  elements.commentarySubtitle.textContent = `${chapter.name_english} - ${chapter.name_arabic}`;
-  renderCommentaryContext(verse);
-  renderCommentaryEntries(verse);
+  const selection = buildVerseCommentarySelection(verse, state.currentSurahData.chapter);
+  if (!selection) {
+    return;
+  }
+
+  openCommentarySelection(selection);
+}
+
+function openSurahIntroCommentary() {
+  if (!state.currentSurahData) {
+    return;
+  }
+
+  const selection = buildSurahIntroCommentarySelection(state.currentSurahData);
+  if (!selection) {
+    return;
+  }
+
+  openCommentarySelection(selection);
+}
+
+function buildVerseCommentarySelection(verse, chapter) {
+  const entries = getVerseCommentaryEntries(verse);
+  if (!entries.length) {
+    return null;
+  }
+
+  return {
+    kind: "verse",
+    eyebrow: "Verse Commentary",
+    title: `${chapter.transliteration} ${verse.aya}`,
+    subtitle: `${chapter.name_english} - ${chapter.name_arabic}`,
+    chapter,
+    verse,
+    entries,
+    plainText: verse.commentary.plain_text,
+  };
+}
+
+function buildSurahIntroCommentarySelection(surahData) {
+  const entries = getSurahIntroEntries(surahData);
+  if (!entries.length) {
+    return null;
+  }
+
+  const { chapter } = surahData;
+  return {
+    kind: "surah-intro",
+    eyebrow: "Surah Introduction",
+    title: `${chapter.transliteration} Introduction`,
+    subtitle: `${chapter.name_english} - ${chapter.name_arabic}`,
+    chapter,
+    entries,
+    plainText: "",
+  };
+}
+
+function openCommentarySelection(selection) {
+  state.currentCommentarySelection = selection;
+  elements.commentaryEyebrow.textContent = selection.eyebrow;
+  elements.commentaryTitle.textContent = selection.title;
+  elements.commentarySubtitle.textContent = selection.subtitle;
+  renderCommentaryContext(selection);
+  renderCommentaryEntries(selection);
   setStatusMessage("");
 
   elements.commentaryOverlay.classList.remove("hidden");
   elements.commentaryOverlay.setAttribute("aria-hidden", "false");
+  resetCommentaryScroll();
+  window.requestAnimationFrame(resetCommentaryScroll);
   document.body.style.overflow = "hidden";
 }
 
-function renderCommentaryContext(verse) {
+function renderCommentaryContext(selection) {
   const context = document.createElement("div");
-  const arabic = document.createElement("p");
-  arabic.className = "verse-arabic";
-  arabic.textContent = verse.arabic;
-  context.append(arabic);
+  if (selection.kind === "surah-intro") {
+    const note = document.createElement("p");
+    note.className = "commentary-context-note";
+    note.textContent = `Introductory hadith linked to ${selection.chapter.transliteration} as a whole rather than a single ayah.`;
+    context.append(note);
+  } else {
+    const { verse } = selection;
+    const arabic = document.createElement("p");
+    arabic.className = "verse-arabic";
+    arabic.textContent = verse.arabic;
+    context.append(arabic);
 
-  if (state.showTransliteration) {
-    const transliteration = document.createElement("p");
-    transliteration.className = "verse-transliteration";
-    transliteration.innerHTML = verse.transliteration_html;
-    context.append(transliteration);
-  }
+    if (state.showTransliteration) {
+      const transliteration = document.createElement("p");
+      transliteration.className = "verse-transliteration";
+      transliteration.innerHTML = verse.transliteration_html;
+      context.append(transliteration);
+    }
 
-  if (state.showEnglish) {
-    const english = document.createElement("p");
-    english.className = "verse-english";
-    english.textContent = verse.english;
-    context.append(english);
+    if (state.showEnglish) {
+      const english = document.createElement("p");
+      english.className = "verse-english";
+      english.textContent = verse.english;
+      context.append(english);
+    }
   }
 
   elements.commentaryContext.replaceChildren(context);
 }
 
-function renderCommentaryEntries(verse) {
+function renderCommentaryEntries(selection) {
   const fragment = document.createDocumentFragment();
-  const chapter = state.currentSurahData?.chapter;
+  const chapter = selection.chapter;
 
   if (!chapter) {
     return;
   }
 
-  if (verse.commentary.entries.length === 0) {
+  if (selection.entries.length === 0) {
     const fallback = document.createElement("article");
     fallback.className = "commentary-entry";
 
@@ -457,21 +575,23 @@ function renderCommentaryEntries(verse) {
     copyButton.textContent = "Copy";
     copyButton.addEventListener("click", async () => {
       await copyText(
-        formatVerseCommentaryForCopy(verse, chapter),
-        "Copied commentary for this verse.",
+        formatCommentarySelectionForCopy(selection),
+        selection.kind === "surah-intro"
+          ? "Copied surah introduction commentary."
+          : "Copied commentary for this verse.",
       );
     });
     actions.append(copyButton);
 
     const plain = document.createElement("p");
     plain.className = "commentary-entry-persian";
-    plain.textContent = verse.commentary.plain_text;
+    plain.textContent = selection.plainText;
 
     fallback.append(actions, plain);
     fragment.append(fallback);
   } else {
-    verse.commentary.entries.forEach((entry, index) => {
-      const article = createCommentaryEntryArticle(entry, verse, chapter, index);
+    selection.entries.forEach((entry, index) => {
+      const article = createCommentaryEntryArticle(entry, selection, index);
       fragment.append(article);
     });
   }
@@ -479,7 +599,7 @@ function renderCommentaryEntries(verse) {
   elements.commentaryBody.replaceChildren(fragment);
 }
 
-function createCommentaryEntryArticle(entry, verse, chapter, index) {
+function createCommentaryEntryArticle(entry, selection, index) {
   const article = elements.commentaryEntryTemplate.content.firstElementChild.cloneNode(true);
   article.querySelector(".commentary-entry-number").textContent = entry.number || `Entry ${index + 1}`;
   article.querySelector(".commentary-entry-scope").textContent = entry.scope || "";
@@ -494,7 +614,7 @@ function createCommentaryEntryArticle(entry, verse, chapter, index) {
   const copyButton = article.querySelector(".entry-copy-button");
   copyButton.addEventListener("click", async () => {
     await copyText(
-      formatEntryForCopy(entry, verse, chapter),
+      formatEntryForCopy(entry, selection),
       "Copied commentary entry.",
     );
   });
@@ -513,31 +633,43 @@ function renderSavedTranslation(article, savedTranslation) {
   container.classList.remove("hidden");
 }
 
-function formatVerseCommentaryForCopy(verse, chapter) {
-  const header = [
-    `${chapter.transliteration} ${verse.aya} (${chapter.name_english})`,
-    `Verse key: ${verse.key}`,
-    `Arabic: ${verse.arabic}`,
-    `English: ${verse.english}`,
-    `Transliteration: ${verse.transliteration_text}`,
-  ].join("\n");
+function formatCommentarySelectionForCopy(selection) {
+  const { chapter, verse } = selection;
+  const header = selection.kind === "surah-intro"
+    ? [
+        `${chapter.transliteration} Introduction (${chapter.name_english})`,
+        `Surah: ${chapter.sura}`,
+      ].join("\n")
+    : [
+        `${chapter.transliteration} ${verse.aya} (${chapter.name_english})`,
+        `Verse key: ${verse.key}`,
+        `Arabic: ${verse.arabic}`,
+        `English: ${verse.english}`,
+        `Transliteration: ${verse.transliteration_text}`,
+      ].join("\n");
 
-  if (!verse.commentary.entries.length) {
-    return `${header}\n\nCommentary:\n${verse.commentary.plain_text}`;
+  if (!selection.entries.length) {
+    return `${header}\n\nCommentary:\n${selection.plain_text || ""}`;
   }
 
-  const body = verse.commentary.entries
-    .map((entry) => formatEntryForCopy(entry, verse, chapter))
+  const body = selection.entries
+    .map((entry) => formatEntryForCopy(entry, selection))
     .join("\n\n--------------------\n\n");
 
   return `${header}\n\n${body}`;
 }
 
-function formatEntryForCopy(entry, verse, chapter) {
-  const parts = [
-    `${chapter.transliteration} ${verse.aya} (${chapter.name_english})`,
-    `Verse key: ${verse.key}`,
-  ];
+function formatEntryForCopy(entry, selection) {
+  const { chapter, verse } = selection;
+  const parts = selection.kind === "surah-intro"
+    ? [
+        `${chapter.transliteration} Introduction (${chapter.name_english})`,
+        `Surah: ${chapter.sura}`,
+      ]
+    : [
+        `${chapter.transliteration} ${verse.aya} (${chapter.name_english})`,
+        `Verse key: ${verse.key}`,
+      ];
 
   if (entry.number) {
     parts.push(`Entry: ${entry.number}`);
@@ -593,13 +725,21 @@ async function copyText(text, successMessage) {
 }
 
 function closeCommentary() {
-  state.currentCommentaryVerse = null;
+  state.currentCommentarySelection = null;
   elements.commentaryOverlay.classList.add("hidden");
   elements.commentaryOverlay.setAttribute("aria-hidden", "true");
   elements.commentaryBody.replaceChildren();
   elements.commentaryContext.replaceChildren();
+  resetCommentaryScroll();
   document.body.style.overflow = "";
   setStatusMessage("");
+}
+
+function resetCommentaryScroll() {
+  if (!elements.commentaryPanel) {
+    return;
+  }
+  elements.commentaryPanel.scrollTop = 0;
 }
 
 function setText(element, value) {
