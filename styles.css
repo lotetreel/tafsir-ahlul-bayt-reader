@@ -504,8 +504,181 @@ body {
   color: var(--muted);
 }
 
-.surah-intro-button {
+/* ── Shamseh Intro Hadith Button ─────────────────────────────────── */
+/* Combined selector (.secondary-button.surah-intro-button) has higher
+   specificity than either class alone, so it overrides the shared defaults. */
+.secondary-button.surah-intro-button {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 80px;
+  cursor: pointer;
+}
+
+.secondary-button.surah-intro-button:hover,
+.secondary-button.surah-intro-button:focus-visible {
+  background: transparent;
+  outline: none;
+}
+
+.surah-intro-button:hover .shamseh-star-wrap,
+.surah-intro-button:focus-visible .shamseh-star-wrap {
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.55));
+}
+
+.surah-intro-button:hover .shamseh-pill,
+.surah-intro-button:focus-visible .shamseh-pill {
+  border-color: #f0d060;
+}
+
+.surah-intro-button:focus-visible {
+  outline: 2px solid #D4AF37;
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+.shamseh-star-wrap {
+  position: absolute;
+  left: 0;
+  z-index: 3;
+  width: 88px;
+  height: 88px;
+  transition: filter 0.4s ease;
+}
+
+.shamseh-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.shamseh-spin {
+  transform-origin: 50px 50px;
+  animation: shamseh-spin 40s linear infinite;
+}
+
+@keyframes shamseh-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Pill body — slides out from behind the star */
+.shamseh-pill {
+  margin-left: 44px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  background: linear-gradient(to right, #0a3622, #0d4b2e);
+  border: 1px solid #D4AF37;
+  border-left: none;
+  border-radius: 0 999px 999px 0;
+  padding-left: 48px;
+  padding-right: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.3s ease;
+}
+
+/* Light sweep shimmer */
+.shamseh-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-20deg);
+  animation: shamseh-sweep 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes shamseh-sweep {
+  0%   { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(500%) skewX(-20deg); }
+}
+
+/* Text block — always expanded */
+.shamseh-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   white-space: nowrap;
+  margin: 0 16px 0 4px;
+}
+
+.shamseh-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #D4AF37;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.shamseh-title {
+  font-family: "Amiri", serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* Count badge */
+.shamseh-badge {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #D4AF37;
+  background: #041E13;
+}
+
+.shamseh-badge-ring {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.shamseh-count {
+  font-family: "Amiri", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(to bottom, #F9E79F 0%, #D4AF37 50%, #9C7206 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shamseh-spin  { animation: none; }
+  .shamseh-sweep { animation: none; }
 }
 
 .reader-body {

@@ -363,12 +363,67 @@ function renderVerses() {
 function renderSurahIntroButton() {
   const introEntries = getSurahIntroEntries(state.currentSurahData);
   if (!introEntries.length) {
-    elements.surahIntroButton.textContent = "";
+    elements.surahIntroButton.innerHTML = "";
     elements.surahIntroButton.classList.add("hidden");
     return;
   }
 
-  elements.surahIntroButton.textContent = `Surah Intro Hadith (${introEntries.length})`;
+  const count = introEntries.length;
+  elements.surahIntroButton.innerHTML = `
+    <div class="shamseh-star-wrap" aria-hidden="true">
+      <svg viewBox="0 0 100 100" class="shamseh-svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="si-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFF4D2"/>
+            <stop offset="30%" stop-color="#D4AF37"/>
+            <stop offset="70%" stop-color="#B38914"/>
+            <stop offset="100%" stop-color="#7A5C05"/>
+          </linearGradient>
+          <linearGradient id="si-gold-inner" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#F9E79F"/>
+            <stop offset="50%" stop-color="#D4AF37"/>
+            <stop offset="100%" stop-color="#9C7206"/>
+          </linearGradient>
+          <linearGradient id="si-emerald" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#117A43"/>
+            <stop offset="100%" stop-color="#041E13"/>
+          </linearGradient>
+          <filter id="si-glow">
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <g class="shamseh-spin">
+          <rect x="20" y="20" width="60" height="60" fill="url(#si-gold-grad)" transform="rotate(0 50 50)" rx="1.5"/>
+          <rect x="20" y="20" width="60" height="60" fill="url(#si-gold-grad)" transform="rotate(30 50 50)" rx="1.5"/>
+          <rect x="20" y="20" width="60" height="60" fill="url(#si-gold-grad)" transform="rotate(60 50 50)" rx="1.5"/>
+        </g>
+        <circle cx="50" cy="50" r="23" fill="url(#si-emerald)" stroke="#021810" stroke-width="1"/>
+        <circle cx="50" cy="50" r="21" fill="none" stroke="url(#si-gold-inner)" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="18" fill="none" stroke="url(#si-gold-inner)" stroke-width="0.5" stroke-dasharray="1 2" opacity="0.6"/>
+        <g filter="url(#si-glow)">
+          <path d="M50,56 L50,40 C46,38 39,39 34,43 L34,59 C39,55 46,54 50,56 Z" fill="url(#si-gold-inner)"/>
+          <path d="M50,56 L50,40 C54,38 61,39 66,43 L66,59 C61,55 54,54 50,56 Z" fill="url(#si-gold-inner)"/>
+          <path d="M50,40 L50,56" stroke="#041E13" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+    <div class="shamseh-pill">
+      <div class="shamseh-sweep" aria-hidden="true"></div>
+      <div class="shamseh-text" aria-hidden="true">
+        <span class="shamseh-label">Introductory</span>
+        <span class="shamseh-title">HADITH</span>
+      </div>
+      <div class="shamseh-badge" aria-hidden="true">
+        <div class="shamseh-badge-ring"></div>
+        <span class="shamseh-count">${count}</span>
+      </div>
+    </div>
+    <span class="sr-only">Introductory Hadith, ${count} entries</span>
+  `;
   elements.surahIntroButton.classList.remove("hidden");
 }
 
