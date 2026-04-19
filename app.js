@@ -109,7 +109,10 @@ async function boot() {
   state.compactView = hasInitialHash ? "reader" : "list";
   applyCompactViewState();
   renderChapterList();
-  await loadSurah(state.currentSura, { revealReader: hasInitialHash });
+  await loadSurah(state.currentSura, {
+    revealReader: hasInitialHash,
+    updateHash: hasInitialHash,
+  });
 }
 
 function bindEvents() {
@@ -191,7 +194,7 @@ function bindEvents() {
     if (Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura)) {
       if (hashSura !== state.currentSura) {
         loadSurah(hashSura, { revealReader: true });
-      } else {
+      } else if (state.compactView !== "reader") {
         showCompactReaderView();
       }
     }
@@ -267,7 +270,9 @@ async function loadSurah(sura, options = {}) {
   closeCommentary();
   state.currentSura = sura;
   state.currentSurahData = null;
-  window.location.hash = String(sura);
+  if (options.updateHash !== false) {
+    window.location.hash = String(sura);
+  }
   updateHeader(chapter, null);
   renderSurahIntroButton();
   renderChapterList();
