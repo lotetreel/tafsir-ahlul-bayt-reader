@@ -45,6 +45,7 @@ const elements = {
   basmalahCard: document.getElementById("basmalahCard"),
   verseList: document.getElementById("verseList"),
   showChapterList: document.getElementById("showChapterList"),
+  readerHomeLink: document.getElementById("readerHomeLink"),
   prevChapter: document.getElementById("prevChapter"),
   nextChapter: document.getElementById("nextChapter"),
   showTransliteration: document.getElementById("showTransliteration"),
@@ -112,11 +113,11 @@ async function boot() {
 }
 
 function bindEvents() {
-  elements.showChapterList.addEventListener("click", () => {
-    if (window.location.hash !== "") {
-      history.pushState(null, "", window.location.pathname + window.location.search);
-    }
-    showCompactListView();
+  elements.showChapterList.addEventListener("click", goHome);
+
+  elements.readerHomeLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    goHome();
   });
 
   elements.chapterSearch.addEventListener("input", (event) => {
@@ -492,6 +493,13 @@ function showCompactListView() {
   state.compactView = "list";
   applyCompactViewState();
   scrollCompactViewportToTop();
+}
+
+function goHome() {
+  if (window.location.hash !== "") {
+    history.pushState(null, "", window.location.pathname + window.location.search);
+  }
+  showCompactListView();
 }
 
 function scrollCompactViewportToTop() {
