@@ -113,6 +113,9 @@ async function boot() {
 
 function bindEvents() {
   elements.showChapterList.addEventListener("click", () => {
+    if (window.location.hash !== "") {
+      history.pushState(null, "", window.location.pathname + window.location.search);
+    }
     showCompactListView();
   });
 
@@ -178,9 +181,18 @@ function bindEvents() {
   });
 
   window.addEventListener("hashchange", () => {
-    const hashSura = Number.parseInt(window.location.hash.replace("#", ""), 10);
-    if (Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura) && hashSura !== state.currentSura) {
-      loadSurah(hashSura, { revealReader: true });
+    const raw = window.location.hash.replace("#", "");
+    if (raw === "") {
+      showCompactListView();
+      return;
+    }
+    const hashSura = Number.parseInt(raw, 10);
+    if (Number.isInteger(hashSura) && state.chaptersBySura.has(hashSura)) {
+      if (hashSura !== state.currentSura) {
+        loadSurah(hashSura, { revealReader: true });
+      } else {
+        showCompactReaderView();
+      }
     }
   });
 
