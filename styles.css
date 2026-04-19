@@ -185,6 +185,36 @@ body {
   margin-bottom: 22px;
 }
 
+.reader-home-link {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 4px 0;
+  color: var(--accent);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reader-home-link:hover,
+.reader-home-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.reader-home-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  opacity: 0.72;
+}
+
+.reader-home-brand {
+  font-family: "Alegreya", serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+}
+
 .hero-panel {
   background: var(--hero-bg);
   border: 1px solid rgba(31, 95, 69, 0.12);
